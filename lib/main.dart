@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tmdb_q/httpConfig.dart';
 import 'package:tmdb_q/models/genre.dart';
+import 'package:tmdb_q/models/movie.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,14 +36,23 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     print('Main >> initState');
-    fetchGenres().then((List<Genre>? genres) {
-      print('Main >> genresLength:'
-          '${genres != null ? genres.length : 'NULL'}***');
-      for (Genre genre in genres!) {
-        print('Main >> genre:'
-            '${genre != null ? genre.name : 'NULL'}***');
-      }
-    });
+    try {
+      fetchGenres().then((List<Genre>? genres) {
+        print('Main >> genresLength:${genres!.length}***');
+        for (Genre genre in genres) {
+          print('Main >> genre:${genre.name}***');
+        }
+      });
+      fetchPopularMovies().then((List<Movie>? movies) {
+        print('Main >> moviesLength:${movies!.length}***');
+        for (Movie movie in movies) {
+          print('Main >> movie:${movie.title}***');
+        }
+      });
+    } catch (e) {
+      print('Main >> initState error:'
+          '${e != null ? e.toString() : 'NULL'}***');
+    }
   }
 
   @override
