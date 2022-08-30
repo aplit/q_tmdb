@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tmdb_q/hive/boxes.dart';
 import 'package:tmdb_q/httpConfig.dart';
 import 'package:tmdb_q/models/genre.dart';
 import 'package:tmdb_q/models/movie.dart';
@@ -32,6 +33,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Genre> genres = [];
+  List<Movie> movies = [];
+
   @override
   void initState() {
     super.initState();
@@ -42,12 +46,19 @@ class _MyHomePageState extends State<MyHomePage> {
         for (Genre genre in genres) {
           print('Main >> genre:${genre.name}***');
         }
+        setState(() {
+          this.genres = genres;
+        });
       });
       fetchPopularMovies().then((List<Movie>? movies) {
         print('Main >> moviesLength:${movies!.length}***');
         for (Movie movie in movies) {
           print('Main >> movie:${movie.title}***');
         }
+        setState(() {
+          this.movies = movies;
+        });
+        savePopularMovies(movies);
       });
     } catch (e) {
       print('Main >> initState error:'
