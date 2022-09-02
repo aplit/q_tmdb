@@ -13,6 +13,7 @@ class Movie {
     required this.video,
     required this.vote_average,
     required this.vote_count,
+    required this.favorited,
   });
 
   // Required fields
@@ -29,8 +30,9 @@ class Movie {
   bool video;
   double vote_average;
   int vote_count;
+  bool favorited;
 
-  Movie.fromJson(Map<String, dynamic> json)
+  Movie.fromJson(Map<dynamic, dynamic> json)
       : id = json['id'],
         adult = json['adult'],
         backdrop_path = json['backdrop_path'],
@@ -43,9 +45,10 @@ class Movie {
         title = json['title'],
         video = json['video'],
         vote_average = 1.0 * json['vote_average'],
-        vote_count = json['vote_count'];
+        vote_count = json['vote_count'],
+        favorited = json['favorited'] ?? false;
 
-  Map<String, dynamic> toJson() => {
+  Map<dynamic, dynamic> toJson() => {
         'id': id,
         'adult': adult,
         'backdrop_path': backdrop_path,
@@ -59,5 +62,6 @@ class Movie {
         'video': video,
         'vote_average': vote_average,
         'vote_count': vote_count,
+        'favorited': favorited,
       };
 }

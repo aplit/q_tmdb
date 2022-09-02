@@ -14,6 +14,6 @@ class Genre {
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'gender': name,
+        'name': name,
       };
 }
