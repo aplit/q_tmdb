@@ -56,6 +56,22 @@ Future<Map<String, dynamic>> getPopularMovies() async {
   return collectionBox.getAllValues();
 }
 
+Future<List<Movie>> getFavoritedPopularMovies() async {
+  print('Boxes >> getFavoritedPopularMovies');
+  Map<String, dynamic> map = await getPopularMovies();
+  List<Movie> movies = [];
+  map.forEach((key, value) {
+    Movie movie = Movie.fromJson(value);
+    print('Boxes >> favoritedMovieKey:$key|title:${movie.title}'
+        '|favorited:${movie.favorited}'
+        '***');
+    if (movie.favorited) {
+      movies.add(movie);
+    }
+  });
+  return movies;
+}
+
 void deletePopularMovie(int id) async {
   CollectionBox collectionBox = await getMoviesBox();
   print('Boxes >> deletePopularMovie id:$id***');

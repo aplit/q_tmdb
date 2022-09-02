@@ -42,6 +42,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Genre> genres = [];
   List<Movie> movies = [];
+  List<Movie> favorites = [];
   HashMap<int, Image> photoList = HashMap();
 
   int selectedIndex = 0;
@@ -51,6 +52,14 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       selectedIndex = index;
     });
+    switch (index) {
+      case 0:
+        applyPopularMovies([]);
+        break;
+      case 2:
+        applyFavoritedMovies();
+        break;
+    }
   }
 
   @override
@@ -59,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print('Main >> initState');
     try {
       applyPopularMovies([]);
+      applyFavoritedMovies();
       fetchGenres().then((List<Genre>? genres) {
         print('Main >> genresLength:${genres!.length}***');
         for (Genre genre in genres) {
@@ -88,7 +98,11 @@ class _MyHomePageState extends State<MyHomePage> {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          selectedIndex == 0 ? getPopularMoviesList() : getGenresList(),
+          selectedIndex == 0
+              ? getPopularMoviesList(movies)
+              : selectedIndex == 1
+                  ? getGenresList()
+                  : getPopularMoviesList(favorites),
         ],
       ),
       bottomNavigationBar: getNavigationBar(selectedIndex, onItemTapped),
@@ -128,13 +142,22 @@ class _MyHomePageState extends State<MyHomePage> {
     //TODO downloadPosters(movies);
   }
 
-  Widget getPopularMoviesList() {
+  void applyFavoritedMovies() async {
+    print('Main >> applyFavoritedMovies');
+    List<Movie> movies = await getFavoritedPopularMovies();
+    setState(() {
+      favorites = movies;
+    });
+    //TODO downloadPosters(movies);
+  }
+
+  Widget getPopularMoviesList(List<Movie> movieList) {
     return SliverList(
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-        if (index >= movies.length) {
+        if (index >= movieList.length) {
           return null;
         }
-        Movie movie = movies[index];
+        Movie movie = movieList[index];
         Image? poster =
             photoList.containsKey(movie.id) ? photoList[movie.id] : null;
         return Container(
@@ -144,12 +167,15 @@ class _MyHomePageState extends State<MyHomePage> {
             child: InkWell(
               onTap: () async {
                 print('Main >> movieOnTap:${movie.title}***');
-                await Navigator.push(
+                dynamic result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => MovieDetails(movie: movie),
                   ),
                 );
+                if (result != null) {
+                  applyPopularMovies([]);
+                }
               },
               child: Container(
                 padding: const EdgeInsets.all(20),
@@ -163,6 +189,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 //       offset: Offset(0.0, 2.0),
                 //     )
                 //   ],
+                // ),
+                //   InkWell(
+                //   onTap: () {
+                //     //TODO
+                //   },
+                //   child: const Image(
+                //     image: AssetImage('assets/icon_bookmark_yellow.png'),
+                //     fit: BoxFit.contain,
+                //     width: 24,
+                //   ),
                 // ),
                 child: Stack(
                   alignment: Alignment.center,
@@ -178,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                     Align(
-                      alignment: Alignment.topRight,
+                      alignment: Alignment.centerRight,
                       child: IconButton(
                         onPressed: () {
                           print('Main >> favoriteOnPressed');
@@ -186,6 +222,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             movie.favorited = !movie.favorited;
                           });
                           savePopularMovie(movie);
+                          // if (selectedIndex == 2) {
+                          //   applyFavoritedMovies();
+                          // }
                         },
                         icon: Image(
                           image: movie.favorited != null && movie.favorited
@@ -197,16 +236,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: 24,
                         ),
                       ),
-                      //   InkWell(
-                      //   onTap: () {
-                      //     //TODO
-                      //   },
-                      //   child: const Image(
-                      //     image: AssetImage('assets/icon_bookmark_yellow.png'),
-                      //     fit: BoxFit.contain,
-                      //     width: 24,
-                      //   ),
-                      // ),
                     ),
                   ],
                 ),

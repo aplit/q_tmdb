@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tmdb_q/hive/boxes.dart';
 import 'package:tmdb_q/models/movie.dart';
 
 class MovieDetails extends StatelessWidget {
@@ -38,6 +39,16 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(movie.title),
+        leading: IconButton(
+          onPressed: () {
+            print('Details >> onBackPressed');
+            Navigator.of(context).pop(movie);
+          },
+          icon: const Icon(
+            Icons.arrow_back_sharp,
+            color: Colors.black,
+          ),
+        ),
       ),
       body: Container(
         padding: const EdgeInsets.only(left: 20, top: 44, right: 20),
@@ -45,13 +56,41 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
-              movie.title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    movie.title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    onPressed: () {
+                      print('Details >> favoriteOnPressed');
+                      setState(() {
+                        movie.favorited = !movie.favorited;
+                      });
+                      savePopularMovie(movie);
+                    },
+                    icon: Image(
+                      image: movie.favorited != null && movie.favorited
+                          ? const AssetImage('assets/icon_bookmark_yellow.png')
+                          : const AssetImage(
+                              'assets/icon_bookmark_bordered.png'),
+                      fit: BoxFit.contain,
+                      width: 36,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(
               height: 10,

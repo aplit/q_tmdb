@@ -145,6 +145,19 @@ Widget getNavigationBar(int selectedIndex, dynamic onItemTapped) {
         ),
         label: 'Genres',
       ),
+      BottomNavigationBarItem(
+        icon: Image(
+          image: AssetImage('assets/icon_bookmark_gray.png'),
+          fit: BoxFit.contain,
+          width: 24,
+        ),
+        activeIcon: Image(
+          image: AssetImage('assets/icon_bookmark.png'),
+          fit: BoxFit.contain,
+          width: 24,
+        ),
+        label: 'Favorites',
+      ),
     ],
   );
 }
